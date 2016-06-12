@@ -60,8 +60,12 @@ public class WikiSearch {
 	 * @return New WikiSearch object.
 	 */
 	public WikiSearch or(WikiSearch that) {
-        // FILL THIS IN!
-		return null;
+        Map<String, Integer> union = new HashMap<String, Integer>(map);
+        for (String url : that.map.keySet()) {
+        	Integer sum = totalRelevance(this.getRelevance(url), that.getRelevance(url));
+        	union.put(url, sum);
+        }
+        return new WikiSearch(union);
 	}
 	
 	/**
@@ -71,8 +75,14 @@ public class WikiSearch {
 	 * @return New WikiSearch object.
 	 */
 	public WikiSearch and(WikiSearch that) {
-        // FILL THIS IN!
-		return null;
+        Map<String, Integer> intersection = new HashMap<String, Integer>();
+        for (String url : this.map.keySet()) {
+        	if (that.map.get(url) != null) {
+        		Integer sum = totalRelevance(this.getRelevance(url), that.getRelevance(url));
+        		intersection.put(url, sum);
+        	}
+        }
+        return new WikiSearch(intersection);        
 	}
 	
 	/**
@@ -82,8 +92,13 @@ public class WikiSearch {
 	 * @return New WikiSearch object.
 	 */
 	public WikiSearch minus(WikiSearch that) {
-        // FILL THIS IN!
-		return null;
+        Map<String, Integer> difference = new HashMap<String, Integer>();
+        for (String url : this.map.keySet()) {
+        	if (that.map.get(url) == null) {
+        		difference.put(url, this.getRelevance(url));
+        	}
+        }
+        return new WikiSearch(difference);
 	}
 	
 	/**
@@ -104,8 +119,22 @@ public class WikiSearch {
 	 * @return List of entries with URL and relevance.
 	 */
 	public List<Entry<String, Integer>> sort() {
-        // FILL THIS IN!
-		return null;
+		List<Entry<String, Integer>> results = new LinkedList<Entry<String, Integer>>(map.entrySet());
+
+        Comparator<Entry<String, Integer>> comparator = new Comparator<Entry<String, Integer>>() {
+            @Override
+            public int compare(Entry<String, Integer> entry1, Entry<String, Integer> entry2) {
+            	if (entry1.getValue() < entry2.getValue())
+            		return -1;
+            	else if (entry1.getValue() > entry2.getValue())
+            		return 1;
+            	else
+            		return 0;
+            }
+        };
+
+        Collections.sort(results, comparator);
+        return results;
 	}
 
 	/**
